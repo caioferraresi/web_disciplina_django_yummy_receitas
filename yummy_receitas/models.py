@@ -30,7 +30,7 @@ class Receita(models.Model):
     video = models.ImageField(upload_to=get_image_path, blank=True, null=True)
 
     #chave classe Categoria
-    categoria = models.ForeignKey(Categoria)
+    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE, related_name='receitas')
 
     ingredientes = models.TextField(null=True)
     tempo_preparo = models.CharField(max_length=200, null=True)

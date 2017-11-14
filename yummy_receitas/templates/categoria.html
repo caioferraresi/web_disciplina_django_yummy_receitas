@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+    <p>Categoria: {{ categoria }}</p>
+
+    <p>Receitas:</p>
+    <ul>
+    {% for receita in receitas %}
+        <li>
+            <p>{{ receita.descricao|linebreaks }}</p>
+            <p>{{ receita.autor|linebreaks }}</p>
+        </li>
+    {% empty %}
+        <li>Ainda não há receitas para esta categoria.</li>
+    {% endfor %}
+    </ul>
+{% endblock content %}
