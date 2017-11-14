@@ -6,8 +6,7 @@
     <ul>
     {% for receita in receitas %}
         <li>
-            <p>{{ receita.descricao|linebreaks }}</p>
-            <p>{{ receita.autor|linebreaks }}</p>
+            <p>{{ receita.nome }}</p>
         </li>
     {% empty %}
         <li>Ainda não há receitas para esta categoria.</li>
