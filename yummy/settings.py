@@ -40,6 +40,8 @@ INSTALLED_APPS = [
 
     # Minhas aplicações
      'yummy_receitas',
+     'users',
+
 ]
 
 MIDDLEWARE = [
