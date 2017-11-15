@@ -3,6 +3,12 @@
     <p>Categoria: {{ categoria }}</p>
 
     <p>Receitas:</p>
+
+    <p>
+        <a href="{% url 'yummy_receitas:nova_receita' categoria.id %}">Adicionar nova
+        receita</a>
+    </p>
+
     <ul>
     {% for receita in receitas %}
         <li>
