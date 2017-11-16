@@ -6,6 +6,7 @@
    Olá, {{ user.username }}.
    <a href="{% url 'users:logout' %}">sair</a>
   {% else %}
+   <a href="{% url 'users:register' %}">registrar</a> -
    <a href="{% url 'users:login' %}">entrar</a>
   {% endif %}
 
