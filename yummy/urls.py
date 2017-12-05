@@ -15,9 +15,16 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from rest_framework import routers
+from yummy_receitas import views
+
+
+router = routers.DefaultRouter()
+router.register(r'receitas', views.ReceitaViewSet)
+
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^users/', include('users.urls', namespace='users')),
-    url(r'', include('yummy_receitas.urls', namespace='yummy_receitas')),
+    url(r'^', include(router.urls))
 ]

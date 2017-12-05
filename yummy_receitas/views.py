@@ -2,75 +2,56 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from .models import Categoria
-from .forms import ReceitaForm
+# from .forms import ReceitaForm
 
 from .models import Receita
 from rest_framework import viewsets
 from rest_framework.decorators import detail_route, list_route
 from .serializers import ReceitaSerializer
+from rest_framework.response import Response
 import datetime
 
 
 
 class ReceitaViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
     queryset = Receita.objects.all()
     serializer_class = ReceitaSerializer
 
 
     def list(self, request):
-        pass
+        receitas = Receita.objects.all()
+        page = self.paginate_queryset(receitas)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(receitas, many=True)
+        return Response(serializer.data)       
+
 
     def create(self, request):
         date_added = datetime.datetime.now()
-        nome = request.POST['nomeReceita']
-        autor = user.email
-        descricao = request.POST['descricao']
-        imagem = request.POST['imagemReceita']
-        video = request.POST['videoReceita']
-        tempo_preparo = request.POST['tempoPreparo']
-        instrucoes_preparo = request.POST['instrucoesPreparo']
-        porcoes = request.POST['porcoes']
-        valor_nutricional = request.POST['valorNutricional']
-        metodo_cozimento = request.POST['metodoCozimento']
+        nome = request.data['nome']
+        autor = "email"
+        descricao = request.data['descricao']
+        link_imagem = request.data['imagem']
+        link_video = request.data['video']
+        tempo_preparo = request.data['tempo_preparo']
+        instrucoes_preparo = request.data['instrucoes_preparo']
+        porcoes = request.data['porcoes']
+        valor_nutricional = request.data['valor_nutricional']
+        metodo_cozimento = request.data['metodo_cozimento']
         
-        receita = Receita.objects.create_receita(self, date_added, nome, autor, descricao, imagem, video, tempo_preparo, instrucoes_preparo, porcoes, valor_nutricional, metodo_cozimento)
+        receita = Receita.objects.create_receita(date_added, nome, autor, descricao, link_imagem, link_video, tempo_preparo, instrucoes_preparo, porcoes, valor_nutricional, metodo_cozimento)
         receita.save()
+        serializer = self.get_serializer(receita)
+        return Response(serializer.data)
 
 
-# Create your views here.
-def inicial(request):
-    return render(request, 'inicial.html')
+    def retrieve(self, request, pk=None):
+        receitas = Receita.objects.get(pk=pk)
+        serializer = self.get_serializer(receitas, many=True)
+        return Response(serializer.data) 
 
 
-def categorias(request):
-    categorias = Categoria.objects.order_by('date_added')
-    context = {'categorias': categorias}
-    return render(request, 'categorias.html', context)
-
-
-def categoria(request, categoria_id):
-    """Show a single category and all its entries."""
-    categoria = Categoria.objects.get(id=categoria_id)
-    receitas = categoria.receitas.order_by('-date_added')
-    context = {'categoria': categoria, 'receitas': receitas}
-    return render(request, 'categoria.html', context)
-
-def nova_receita(request, categoria_id):
-    categoria = Categoria.objects.get(id=categoria_id)
-    if request.method != 'POST':
-        form = ReceitaForm()
-    else:
-        form = ReceitaForm(data=request.POST)
-        if form.is_valid():
-            nova_receita = form.save(commit=False)
-            nova_receita.categoria = categoria
-            nova_receita.save()
-            return HttpResponseRedirect(reverse('yummy_receitas:categoria', args=[categoria_id]))
-
-    context = {'categoria': categoria, 'form': form}
-    return render(request, 'nova_receita.html', context)
 
 
