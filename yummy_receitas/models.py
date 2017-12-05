@@ -1,9 +1,6 @@
 from django.db import models
 import os
-
-
-def get_image_path(instance, filename):
-    return os.path.join('photos', str(instance.id), filename)
+from .managers import ReceitaManager
 
 
 class Categoria(models.Model):
@@ -20,24 +17,22 @@ class Categoria(models.Model):
 
 
 class Receita(models.Model):
-
     date_added = models.DateTimeField(auto_now_add=True)
     nome = models.CharField(max_length=200, null=True)
-
     autor = models.CharField(max_length=200, null=True)
     descricao = models.TextField()
-    imagem = models.ImageField(upload_to=get_image_path, blank=True, null=True)
-    video = models.ImageField(upload_to=get_image_path, blank=True, null=True)
-
+    imagem = models.CharField(max_length=200, null=True)
+    video = models.CharField(max_length=200, null=True)
     #chave classe Categoria
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE, related_name='receitas')
-
     ingredientes = models.TextField(null=True)
-    tempo_preparo = models.CharField(max_length=200, null=True)
+    tempo_preparo = models.CharField(max_length=10, null=True)
     instrucoes_preparo = models.TextField(null=True)
     porcoes = models.CharField(max_length=200, null=True)
     valor_nutricional = models.TextField(null=True)
     metodo_cozimento = models.CharField(max_length=200, null=True)
+
+    objects = ReceitaManager()
 
     class Meta:
         verbose_name = 'receita'

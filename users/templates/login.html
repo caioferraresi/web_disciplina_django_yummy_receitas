@@ -1,15 +1,41 @@
-{% extends "base.html" %}
-{% block content %}
+{% extends "base.html" %} {% block content %} {% if form.errors %}
+<p>Your username and password didn't match. Please try again.</p>
+{% endif %}
 
-    {% if form.errors %}
-        <p>Your username and password didn't match. Please try again.</p>
-    {% endif %}
+<section class="ui middle aligned center aligned grid grid-login">
+    <div class="column column-login">
+        <h2 class="ui teal image header image-login">
+            <i class="food icon"></i>
+            <div class="content">
+                Faça login na sua conta!
+            </div>
+        </h2>
+        <form class="ui large form login" method="post" action="{% url 'users:login' %}">
+            {% csrf_token %}
+            <div class="ui stacked segment">
+                <div class="field">
+                    <div class="ui left icon input">
+                        <i class="user icon"></i>
+                        <input type="text" name="email" placeholder="E-mail" id="fieldEmail">
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="ui left icon input">
+                        <i class="lock icon"></i>
+                        <input type="password" name="password" placeholder="Senha" id="fieldSenha">
+                    </div>
+                </div>
+                <button class="ui fluid large teal submit button" type="submit" id="btnLogin">Login</button>
+            </div>
 
-    <form method="post" action="{% url 'users:login' %}">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button name="submit">log in</button>
-        <input type="hidden" name="next" value="{% url 'yummy_receitas:inicial' %}" />
-    </form>
+            <div class="ui error message"></div>
+            <input type="hidden" name="next" value="{% url 'yummy_receitas:inicial' %}" />
+        </form>
+
+        <div class="ui message">
+            Novo no site? <a href="{% url 'users:register' %}">Registre-se!</a>
+        </div>
+    </div>
+</section>
 
 {% endblock content %}

@@ -1,15 +1,249 @@
-<p>
- <a href="{% url 'yummy_receitas:inicial' %}">Inicial</a>
- <a href="{% url 'yummy_receitas:categorias' %}">Categorias</a>
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/flickity@2/dist/flickity.min.css">
+   {% load static %}
+  <link rel="stylesheet" href="{% static "css/externo.css" %}"‌​>
+  <title>Página Inicial YUMMY Receitas</title>
+</head>
+
+<body>
   {% if user.is_authenticated %}
-   Olá, {{ user.username }}.
-   <a href="{% url 'users:logout' %}">sair</a>
+  <header id="menuLogado">
+    <nav class="ui menu stackable">
+      <header class="header item" id="logo">
+        <i class="food icon"></i>
+        <strong>YUMMY!</strong>
+      </header>
+      <div class="item item-menu" id="">Logado(a) como: <span id="nomeLogado">{{ user.email }}</span></div>
+      <div class="item">
+        <a class="ui primary button teal" id="logoutBtn" href="{% url 'users:logout' %}">Logout</a>
+      </div>
+      <div class="right menu">
+        <div class="item">
+          <button class="ui primary button" id="novaRec">Criar nova receita</button>
+        </div>
+        <div class="item">
+          <div class="ui search" id="buscaReceitas">
+            <div class="ui icon input">
+              <input id="buscaReceitasInput" class="prompt" type="text" placeholder="Buscar receitas...">
+              <i class="search icon"></i>
+            </div>
+            <div class="results"></div>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
   {% else %}
-   <a href="{% url 'users:register' %}">registrar</a> -
-   <a href="{% url 'users:login' %}">entrar</a>
-  {% endif %}
+  <header id="menuDeslogado">
+    <nav class="ui menu stackable">
+      <header class="header item" id="logo">
+        <i class="food icon"></i>
+        <strong>YUMMY!</strong>
+      </header>
+      <a class="item item-menu" href="{% url 'yummy_receitas:inicial' %}">Home</a>
+      <a class="item item-menu" href="{% url 'users:login' %}">Login</a>
+      <a class="item item-menu" href="{% url 'users:register' %}">Registrar</a>
+    </nav>
+  </header>
+  {% endif %} 
+  {% block content %}
+  {% endblock content %}
+  <footer class="ui inverted vertical footer segment">
+    <div class="ui center aligned container">
+      <div class="ui stackable inverted divided grid">
+        <section class="nine wide column">
+          <h4 class="ui inverted header">Desenvolvedores</h4>
+          <div class="ui inverted link list">
+            <p class="item">Caio Ferraresi Ananias - 9039354</p>
+            <p class="item">Fernando Menzzano - 8936523</p>
+            <p class="item">Thomás Michelena Santos - 6907857</p>
+          </div>
+        </section>
+        <section class="seven wide column">
+          <h4 class="ui inverted header">Links interessantes</h4>
+          <p class="item"><a class="item" href="http://www.icouldkillfordessert.com.br/">ICKFD</a>
+            <p class="item"><a class="item" href="https://www.youtube.com/user/nocedanielle/featured">Dani Noce</a>
+              <p class="item"><a class="item" href="https://www.tastemade.com.br/receitas">Tastemade</a>
+        </section>
+      </div>
+      <div class="ui inverted section divider"></div>
+      <section>
+        <div class="ui centered">
+          <i class="large food icon"></i>
+        </div>
+        <div class="ui horizontal inverted small divided link list">
+          <p class="item item-footer"><strong>YUMMY!</strong></p>
+        </div>
+      </section>
+    </div>
+  </footer>
 
+  <section class="ui small modal scrolling transition hidden" id="modalNovaReceita">
+    <header class="header modal-header">
+      Nova receita:
+    </header>
 
-</p>
-{% block content %}{% endblock content %}
+    <section class="ui center aligned grid">
+      <div class="ui segment" id="segment-form-novaRec">
+        <div class="content">
+          <form class="ui form novaRec" method="post" action="{% url 'yummy_receitas:receitas' %}">
+             {% csrf_token %}
+            <div class="field">
+              <label>Autor</label>
+              <p id='autorReceita'>{{user.email}}</p>
+            </div>
+            <div class="field">
+              <label>Nome da receita</label>
+              <input type="text" name="nomeReceita" placeholder="Nome da receita" id="nomeReceita" maxlength="50" />
+            </div>
+            <div class="field">
+              <label>Descrição</label>
+              <textarea id="descricaoReceita" name="descricao" maxlength="300" id="" cols="25" rows="5" placeholder="Descrição da receita"></textarea>
+            </div>
+
+            <div class="ui two column grid">
+              <div class="row row-mgbt">
+                <div class="column">
+                  <div class="field">
+                    <label>Imagens</label>
+                    <input id="imagemReceita" name="imagemReceita" type="text" placeholder="Link para a imagem"/>
+                  </div>
+                </div>
+                <div class="column">
+                  <div class="field">
+                    <label>Vídeo</label>
+                    <input id="videoReceita" name="videoReceita" type="text" placeholder='Link para o video' />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Categorias</label>
+              <select id="categoriasReceita" class="ui fluid search dropdown" multiple="">
+                                    <option value="">Categorias: selecione quantas achar necessário</option>
+                                    <option value="Carnes">Carnes</option>
+                                    <option value="Massas">Massas</option>
+                                    <option value="Sobremesas">Sobremesas</option>
+                                    <option value="Culinárias Típicas">Culinárias Típicas</option>
+                                    <option value="Drinks">Drinks</option>
+                                </select>
+            </div>
+
+            <div class="ui two column grid">
+              <div class="row">
+                <div class="column">
+                  <div class="field">
+                    <label>Tempo de preparo</label>
+                    <input name="tempoPreparo" id="tempoReceita" type="text" placeholder="Tempo de preparo em minutos" />
+                  </div>
+                </div>
+                <div class="column">
+                  <div class="field">
+                    <label>Método de cozimento</label>
+                    <select name="metodoCozimento" id="cozimentoReceita" class="ui fluid search dropdown">
+                                                <option value="">Selecione um:</option>
+                                                <option value="Assado">Assado</option>
+                                                <option value="Cozido">Cozido</option>
+                                                <option value="Grelhado">Grelhado</option>
+                                                <option value="Frito">Frito</option>
+                                                <option value="Nao vai ao forno">Não vai ao forno</option>
+                                            </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="ui two column grid mgwrng">
+              <div class="row row-mgbt">
+                <div class="column">
+                  <div class="field">
+                    <label>Valor nutricional</label>
+                    <input name="valorNutricional" id="nutricionalReceita" type="text" placeholder="Calorias" />
+                  </div>
+                </div>
+                <div class="column">
+                  <div class="field">
+                    <label>Porções</label>
+                    <input name="porcoes" id="porcoesReceita" type="text" placeholder="Serve quantas pessoas?" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="ui accordion field">
+              <label>Ingredientes</label>
+
+              <div class="ui container hide" id="listaIngredientes">
+                <ul>
+
+                </ul>
+              </div>
+
+              <div class="title">
+                <button class="ui teal button" id="novoIngrediente" type="button">
+                                        Adicionar novo
+                                    </button>
+              </div>
+              <div class="content field">
+                <div class="ui three column grid transition hidden">
+                  <div class="row">
+                    <div class="column">
+                      <label class="">Ingrediente</label>
+                      <input placeholder="Ingrediente" class="" type="text" id='novoIngr'>
+                    </div>
+                    <div class="column">
+                      <label class="">Quantidade</label>
+                      <input placeholder="Quantidade" class="" type="text" id="quantIngr">
+                    </div>
+                    <div class="column">
+                      <label class="">Unidade</label>
+                      <input placeholder="Unidade" class="" type="text" id="unidadeIngr">
+                    </div>
+                    <div class="column right floated">
+                      <div class="ui tiny right floated buttons">
+                        <button class="ui button" id="cancelaNovoIngr" type="button">Cancelar</button>
+                        <div class="or" data-text="ou"></div>
+                        <button class="ui teal button" id="salvaNovoIngr" type="submit">Salvar</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Instruções de preparo</label>
+              <textarea id="instrucoesReceita" name="instrucoesPreparo" maxlength="800 " id="" cols="25" rows="10"></textarea>
+            </div>
+            <input type="hidden" name="next" value="{% url 'yummy_receitas:inicial' %}" />
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <div class="actions">
+      <div class="ui cancel button">Cancelar</div>
+      <div class="ui teal approve button" id="salvarReceita">Salvar</div>
+    </div>
+  </section>
+
+  <section class="ui longer test modal scrolling transition hidden" id="modalDetalhes">
+
+  </section>
+
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.js"></script>
+  <script src="http://cdn.jsdelivr.net/jquery.glide/1.0.6/jquery.glide.min.js"></script>
+  <script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js"></script>
+   {% load static %}
+  <script src="{% static "js/externo.js" %}"></script>
+  <!-- <script src="static/js/externo.js"></script> -->
